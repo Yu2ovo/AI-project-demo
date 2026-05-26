@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 智能客服 Demo | Spring AI / RAG / Tool Calling / MCP</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <header class="hero">
+    <nav class="nav">
+      <div class="brand">
+        <span class="brand-logo">AI</span>
+        <div>
+          <strong>AI 智能客服 Demo</strong>
+          <p>Spring AI · RAG · Tool Calling · MCP · ReAct Agent</p>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="#chat">在线问答</a>
+        <a href="#rag">RAG 流程</a>
+        <a href="#agent">Agent 规划</a>
+        <a href="#deploy">部署说明</a>
+      </div>
+    </nav>
+
+    <section class="hero-main">
+      <div class="hero-copy">
+        <div class="tag">可交互轻量 Demo · 适合简历项目展示</div>
+        <h1>AI智能客服demo</h1>
+        <p>
+          该页面用于展示项目中的核心能力：大模型统一调用、Prompt 约束、多轮对话记忆、RAG 知识库检索、
+          查询重写、Tool Calling、MCP 工具扩展和 ReAct 智能体流程。
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#chat">体验客服问答</a>
+          <a class="btn secondary" href="#agent">查看 Agent 流程</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="terminal-header">
+          <span></span><span></span><span></span>
+        </div>
+        <pre id="architectureText"></pre>
+      </div>
+    </section>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="section-title">
+        <p>PROJECT OVERVIEW</p>
+        <h2>项目展示重点</h2>
+        <span>不直接暴露 API Key，不全量部署后端；通过轻量页面展示核心业务链路和技术方案。</span>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <h3>统一模型调用</h3>
+          <p>基于 Spring AI 封装 ChatClient 调用入口，方便接入通义千问等模型，并支持后续切换模型服务。</p>
+        </article>
+        <article class="feature-card">
+          <h3>RAG 知识库增强</h3>
+          <p>针对模型缺少业务私有知识的问题，先召回相关知识片段，再注入上下文生成回答，降低凭空回答风险。</p>
+        </article>
+        <article class="feature-card">
+          <h3>多轮对话记忆</h3>
+          <p>通过会话 ID 维护上下文，使客服能够理解用户连续追问，而不是每轮都从零开始回答。</p>
+        </article>
+        <article class="feature-card">
+          <h3>Tool Calling / MCP</h3>
+          <p>将文件操作、网页抓取、联网搜索、图片检索等能力封装为工具，使 AI 能够调用外部能力完成复杂任务。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section two-col" id="chat">
+      <div class="panel chat-panel">
+        <div class="panel-head">
+          <div>
+            <p>INTERACTIVE CHAT</p>
+            <h2>AI 客服问答演示</h2>
+          </div>
+          <button id="resetChat" class="ghost-btn">清空会话</button>
+        </div>
+        <div id="chatWindow" class="chat-window"></div>
+        <div class="quick-questions">
+          <button data-question="课程视频上传失败后怎么办？">视频上传失败怎么办</button>
+          <button data-question="退款流程是什么？">退款流程</button>
+          <button data-question="我想查询订单支付状态">查询订单状态</button>
+          <button data-question="帮我生成一份学习计划">生成学习计划</button>
+        </div>
+        <div class="input-row">
+          <input id="messageInput" placeholder="输入问题，例如：课程视频上传失败后怎么办？" />
+          <button id="sendBtn" class="btn primary">发送</button>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <div class="panel-head simple">
+          <div>
+            <p>CONVERSATION MEMORY</p>
+            <h2>会话上下文</h2>
+          </div>
+        </div>
+        <div class="memory-box">
+          <p><b>chatId：</b><span id="chatId"></span></p>
+          <p><b>记忆窗口：</b>最近 6 轮对话</p>
+          <p><b>当前轮数：</b><span id="turnCount">0</span></p>
+        </div>
+        <div class="pipeline-mini">
+          <div>用户问题</div>
+          <span>→</span>
+          <div>查询重写</div>
+          <span>→</span>
+          <div>知识检索</div>
+          <span>→</span>
+          <div>模型生成</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section" id="rag">
+      <div class="section-title">
+        <p>RAG PIPELINE</p>
+        <h2>RAG 检索增强流程</h2>
+        <span>点击客服问题后，这里会展示“原始问题 → 查询重写 → 文档召回 → 生成回答”的过程。</span>
+      </div>
+      <div class="rag-grid">
+        <div class="pipeline-card">
+          <h3>1. 原始问题</h3>
+          <p id="rawQuery">等待输入...</p>
+        </div>
+        <div class="pipeline-card">
+          <h3>2. 查询重写</h3>
+          <p id="rewrittenQuery">等待输入...</p>
+        </div>
+        <div class="pipeline-card wide">
+          <h3>3. Top 文档召回</h3>
+          <div id="retrievedDocs" class="doc-list"></div>
+        </div>
+        <div class="pipeline-card wide">
+          <h3>4. 回答依据</h3>
+          <p id="answerBasis">等待输入...</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section two-col" id="agent">
+      <div class="panel">
+        <div class="panel-head simple">
+          <div>
+            <p>REACT AGENT</p>
+            <h2>自主规划智能体演示</h2>
+          </div>
+        </div>
+        <p class="muted">
+          模拟项目中的 ReAct Agent：先思考任务，再选择工具执行，最后根据工具结果继续推理，直到完成目标。
+        </p>
+        <div class="task-box">
+          <input id="agentTask" value="帮我整理一份 Java 后端面试复习计划，并生成文档" />
+          <button id="runAgent" class="btn primary">运行 Agent</button>
+        </div>
+        <div id="agentSteps" class="agent-steps"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head simple">
+          <div>
+            <p>TOOLS</p>
+            <h2>工具调用能力</h2>
+          </div>
+        </div>
+        <div class="tool-grid">
+          <button class="tool-card" data-tool="search">联网搜索</button>
+          <button class="tool-card" data-tool="scrape">网页抓取</button>
+          <button class="tool-card" data-tool="file">文件写入</button>
+          <button class="tool-card" data-tool="pdf">PDF 生成</button>
+          <button class="tool-card" data-tool="mcp">MCP 图片搜索</button>
+          <button class="tool-card" data-tool="terminal">终端操作</button>
+        </div>
+        <div id="toolResult" class="tool-result">点击任意工具，查看模拟调用结果。</div>
+      </div>
+    </section>
+
+    
+  </main>
+
+  <footer>
+    <p>AI 智能客服 Demo · 用于个人项目展示与面试复盘</p>
+  </footer>
+
+  <script src="./app.js"></script>
+</body>
+</html>
