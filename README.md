@@ -1,16 +1,19 @@
-# AI 智能客服轻量 Demo
+# 智服 AI 客服平台
 
-这是一个用于简历项目展示的静态 Demo 页面，基于 AI 智能客服 / AI Agent 项目的功能进行可视化展示。
+面向在线咨询场景的 AI 智能客服项目页面，包含在线客服、知识库检索、工具调用、Agent 流程、效果评估与系统架构等模块。
 
-## 展示内容
+## 页面模块
 
-- AI 客服问答演示
-- 多轮对话记忆
-- 查询重写
-- RAG 知识库检索
-- 流式回答模拟
-- Tool Calling 工具调用
-- MCP 工具扩展
-- ReAct Agent 多步规划流程
+- 首页
+- 在线客服
+- 业务知识库
+- 工具中心
+- Agent 多步骤任务处理
+- 效果评估
+- 系统架构
 
+## 部署方式
 
+该项目为静态页面，可部署到 GitHub Pages、Vercel、Netlify 或腾讯云 CloudBase 静态网站托管。
+
+GitHub Pages 部署时，将 `index.html`、`styles.css`、`app.js`、`README.md` 放在仓库根目录，并在 Settings → Pages 中选择 `main` 分支和 `/root` 目录即可。
